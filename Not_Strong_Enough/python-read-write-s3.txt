@@ -1,0 +1,38 @@
+import boto3
+import pandas as pd
+from io import BytesIO
+
+# Initialize a boto3 client with your AWS credentials
+# Access key ID & Secret access key shared in your mail
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id='Access key ID',
+    aws_secret_access_key='Secret access key'
+)
+
+### Read  CSV file from S3
+# Specify your  AWS S3 bucket  name
+bucket_name = 'bucket name'
+read_file_name = 'file name for read'
+
+# Get the object from the bucket
+response = s3_client.get_object(Bucket=bucket_name, Key=read_file_name)
+
+# Read the object (which is in bytes) into a DataFrame
+df = pd.read_csv(BytesIO(response['Body'].read()))
+
+df.head(3)
+
+### write CSV file to S3
+write_file_name = 'file name for write'
+
+# Convert the dataframe to CSV
+csv_buffer = StringIO()
+df.to_csv(csv_buffer, index = False)
+
+# Write the CSV data to S3
+s3_client.put_object(Bucket=bucket_name, Key=write_file_name, Body=csv_buffer.getvalue())
+
+
+
+54.251.95.195
